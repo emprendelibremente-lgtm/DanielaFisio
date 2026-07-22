@@ -1,0 +1,36 @@
+import type { TreatmentSession } from "@/types/private";
+
+export function SessionTimeline({
+  sessions,
+}: {
+  sessions: TreatmentSession[];
+}) {
+  return (
+    <div className="grid gap-4">
+      {sessions.map((session) => (
+        <article
+          className="rounded-lg border border-[var(--line)] bg-white p-5 shadow-[0_14px_34px_rgba(35,40,39,0.035)]"
+          key={session.id}
+        >
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold">{session.date}</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                {session.reason}
+              </p>
+            </div>
+            <p className="text-xs font-semibold text-[var(--muted)]">
+              Dolor {session.painBefore}/10 a {session.painAfter}/10
+            </p>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+            {session.treatmentSummary}
+          </p>
+          <p className="mt-3 text-xs font-semibold text-[#0F3D3A]">
+            INDIBA: {session.usedIndiba ? "Sí" : "No"}
+          </p>
+        </article>
+      ))}
+    </div>
+  );
+}

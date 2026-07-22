@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --brand: #8DCDC4;
+  --brand-hover: #6FBDB3;
+  --petrol: #0F3D3A;
+  --dark: #101918;
+  --paper: #FAF8F4;
+  --warm: #F5EFE6;
+  --text: #232827;
+  --muted: #6F7775;
+  --soft: #BFC4C3;
+  --line: #C8BEB0;
+}
+
+@theme inline {
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+.font-display {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgba(141, 205, 196, 0.45);
+}
