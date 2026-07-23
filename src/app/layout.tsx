@@ -6,18 +6,18 @@ const title = "Daniela Ferreira | Fisioterapia y Rehabilitación";
 const description =
   "Fisioterapia personalizada, recuperación funcional y rehabilitación deportiva con enfoque clínico, humano y tecnológico.";
 const siteUrl = "https://daniela-fisio.vercel.app/";
-const previewImage = "/og-daniela-fisio.png";
+const previewImage = "https://daniela-fisio.vercel.app/og-daniela-fisio.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://daniela-fisio.vercel.app"),
+  alternates: {
+    canonical: siteUrl,
+  },
   title: {
     default: title,
     template: "%s | Daniela Ferreira",
   },
   description,
-  icons: {
-    icon: "/favicon.ico",
-  },
   openGraph: {
     title,
     description,
@@ -38,7 +38,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: [previewImage],
+    images: [
+      {
+        url: previewImage,
+        alt: "Daniela Ferreira, fisioterapeuta especializada en fisioterapia y rehabilitación",
+      },
+    ],
   },
 };
 

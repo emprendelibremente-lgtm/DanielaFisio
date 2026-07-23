@@ -127,6 +127,18 @@ npm run build
 npm run dev
 ```
 
+## Preview al compartir en WhatsApp
+
+La imagen de Open Graph debe existir en `public/og-daniela-fisio.png` y estar
+publicada en `https://daniela-fisio.vercel.app/og-daniela-fisio.png`.
+
+Si WhatsApp muestra una preview antigua después de desplegar:
+
+- Probar con `https://daniela-fisio.vercel.app/?v=2`.
+- Esperar unos minutos después del deploy.
+- Si se cambia la imagen, usar un nombre versionado, por ejemplo
+  `/og-daniela-fisio-v2.png`, y actualizar la metadata.
+
 ## Pendiente para próximas fases
 
 - Revisión legal y privacidad.
