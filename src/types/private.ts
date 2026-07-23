@@ -7,6 +7,13 @@ export type AppointmentStatus =
   | "cancelled";
 
 export type PackageStatus = "active" | "exhausted" | "pending";
+export type PaymentMethod =
+  | "cash"
+  | "bizum"
+  | "card"
+  | "transfer"
+  | "other"
+  | "pending";
 
 export type Patient = {
   id: string;
@@ -48,6 +55,12 @@ export type TreatmentSession = {
   exercisesGiven: string;
   evolutionNotes: string;
   nextRecommendation: string;
+  durationMinutes: number;
+  basePrice: number;
+  discountAmount: number;
+  amountPaid: number;
+  paymentMethod: PaymentMethod | "";
+  paymentNotes: string;
 };
 
 export type SessionPackage = {

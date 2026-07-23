@@ -45,6 +45,12 @@ export type TreatmentSessionRow = {
   exercises_given: string | null;
   evolution_notes: string | null;
   next_recommendation: string | null;
+  duration_minutes?: number | null;
+  base_price?: number | string | null;
+  discount_amount?: number | string | null;
+  amount_paid?: number | string | null;
+  payment_method?: TreatmentSession["paymentMethod"] | null;
+  payment_notes?: string | null;
   patients?: { full_name: string | null } | null;
 };
 
@@ -91,6 +97,9 @@ export function mapAppointment(row: AppointmentRow): Appointment {
 }
 
 export function mapTreatmentSession(row: TreatmentSessionRow): TreatmentSession {
+  const basePrice = Number(row.base_price ?? 0);
+  const discountAmount = Number(row.discount_amount ?? 0);
+
   return {
     id: row.id,
     patientId: row.patient_id,
@@ -105,6 +114,12 @@ export function mapTreatmentSession(row: TreatmentSessionRow): TreatmentSession 
     exercisesGiven: row.exercises_given ?? "",
     evolutionNotes: row.evolution_notes ?? "",
     nextRecommendation: row.next_recommendation ?? "",
+    durationMinutes: row.duration_minutes ?? 60,
+    basePrice,
+    discountAmount,
+    amountPaid: Number(row.amount_paid ?? Math.max(basePrice - discountAmount, 0)),
+    paymentMethod: row.payment_method ?? "",
+    paymentNotes: row.payment_notes ?? "",
   };
 }
 

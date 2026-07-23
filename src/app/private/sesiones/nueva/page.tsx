@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ErrorMessage } from "@/components/private/ErrorMessage";
 import { PatientSelect } from "@/components/private/PatientSelect";
 import { PrivateLayout } from "@/components/private/PrivateLayout";
+import { SessionFinancialFields } from "@/components/private/SessionFinancialFields";
 import { SubmitButton } from "@/components/private/SubmitButton";
 import { createTreatmentSession } from "@/lib/private/actions";
 import { getAppointments } from "@/lib/private/appointments";
@@ -91,6 +92,7 @@ export default async function NewSessionPage({
               </span>
             </span>
           </label>
+          <SessionFinancialFields />
           <details className="rounded-lg border border-[var(--line)] bg-[#FAF8F4] p-4">
             <summary className="cursor-pointer text-sm font-semibold">
               Añadir detalles opcionales

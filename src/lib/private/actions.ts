@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type {
   AppointmentStatus,
   PackageStatus,
+  PaymentMethod,
   PatientStatus,
 } from "@/types/private";
 import type { ActionState } from "./actionState";
@@ -21,6 +22,18 @@ function numberValue(formData: FormData, key: string, fallback: number) {
   return Number.isFinite(value) ? value : fallback;
 }
 
+function moneyValue(formData: FormData, key: string) {
+  const value = text(formData, key);
+  if (!value) {
+    return null;
+  }
+
+  const parsedValue = Number(value.replace(",", "."));
+  return Number.isFinite(parsedValue) && parsedValue >= 0
+    ? Number(parsedValue.toFixed(2))
+    : null;
+}
+
 const appointmentStatuses = [
   "pending",
   "confirmed",
@@ -29,6 +42,26 @@ const appointmentStatuses = [
 ] as const;
 
 const patientStatuses = ["active", "paused", "discharged", "follow_up"] as const;
+const paymentMethods = [
+  "cash",
+  "bizum",
+  "card",
+  "transfer",
+  "other",
+  "pending",
+] as const;
+
+function paymentMethod(formData: FormData): PaymentMethod | null {
+  const value = text(formData, "paymentMethod");
+
+  if (!value) {
+    return null;
+  }
+
+  return paymentMethods.includes(value as PaymentMethod)
+    ? (value as PaymentMethod)
+    : null;
+}
 
 function appointmentStatus(formData: FormData): AppointmentStatus | null {
   const value = text(formData, "appointmentStatus") ?? text(formData, "status");
@@ -503,9 +536,27 @@ export async function createTreatmentSession(formData: FormData) {
 
   const painBefore = nullablePainValue(formData, "painBefore");
   const painAfter = nullablePainValue(formData, "painAfter");
+  const durationMinutes = numberValue(formData, "durationMinutes", 60);
+  const basePrice =
+    moneyValue(formData, "basePrice") ??
+    (durationMinutes === 30 ? 30 : durationMinutes === 60 ? 60 : 0);
+  const discountAmount = moneyValue(formData, "discountAmount") ?? 0;
+  const manualAmountPaid = moneyValue(formData, "amountPaid");
+  const amountPaid =
+    manualAmountPaid ?? Math.max(Number((basePrice - discountAmount).toFixed(2)), 0);
+  const selectedPaymentMethod = paymentMethod(formData);
 
   if (!painBefore.valid || !painAfter.valid) {
     redirect("/private/sesiones/nueva?error=invalid-pain");
+  }
+
+  if (
+    durationMinutes <= 0 ||
+    basePrice < 0 ||
+    discountAmount < 0 ||
+    amountPaid < 0
+  ) {
+    redirect("/private/sesiones/nueva?error=invalid-payment");
   }
 
   if (appointmentId) {
@@ -538,6 +589,12 @@ export async function createTreatmentSession(formData: FormData) {
     exercises_given: text(formData, "exercisesGiven"),
     evolution_notes: text(formData, "evolutionNotes"),
     next_recommendation: text(formData, "nextRecommendation"),
+    duration_minutes: durationMinutes,
+    base_price: basePrice,
+    discount_amount: discountAmount,
+    amount_paid: amountPaid,
+    payment_method: selectedPaymentMethod,
+    payment_notes: text(formData, "paymentNotes"),
     ...(appointmentId ? { appointment_id: appointmentId } : {}),
   };
 

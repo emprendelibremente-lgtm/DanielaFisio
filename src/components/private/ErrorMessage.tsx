@@ -5,6 +5,7 @@ const messages: Record<string, string> = {
   "create-failed": "No se pudo crear el registro. Inténtalo de nuevo.",
   "update-failed": "No se pudo actualizar el registro. Inténtalo de nuevo.",
   "invalid-pain": "El dolor debe estar entre 0 y 10.",
+  "invalid-payment": "Revisa los importes antes de guardar la sesión.",
   "invalid-appointment-status":
     "No se pudo crear la cita. Revisa el estado de la cita.",
   "invalid-package-status": "Revisa el estado del bono antes de guardar.",

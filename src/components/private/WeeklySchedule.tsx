@@ -62,6 +62,29 @@ function getCurrentWorkWeek() {
   });
 }
 
+function getExtendedDays() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const end = new Date(today);
+  const daysUntilNextSaturday = ((6 - today.getDay() + 7) % 7) + 7;
+  end.setDate(today.getDate() + daysUntilNextSaturday);
+  const totalDays =
+    Math.round((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+  return Array.from({ length: totalDays }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + index);
+
+    return {
+      date: formatDate(date),
+      dayNumber: date.getDate(),
+      displayDate: `${date.getDate()} ${monthShortLabels[date.getMonth()]}`,
+      label: dayLabels[date.getDay()],
+      short: dayShortLabels[date.getDay()],
+    };
+  });
+}
+
 function todayKey() {
   return formatDate(new Date());
 }
@@ -149,8 +172,17 @@ function FreeSlotButton({
   );
 }
 
-export function WeeklySchedule({ appointments }: { appointments: Appointment[] }) {
-  const scheduleDays = useMemo(() => getCurrentWorkWeek(), []);
+export function WeeklySchedule({
+  appointments,
+  mode = "week",
+}: {
+  appointments: Appointment[];
+  mode?: "extended" | "week";
+}) {
+  const scheduleDays = useMemo(
+    () => (mode === "extended" ? getExtendedDays() : getCurrentWorkWeek()),
+    [mode],
+  );
   const today = todayKey();
   const [selectedDate, setSelectedDate] = useState(() => scheduleDays[0].date);
 
@@ -169,7 +201,12 @@ export function WeeklySchedule({ appointments }: { appointments: Appointment[] }
     <div className="grid gap-6">
       <div className="hidden overflow-x-auto lg:block">
         <div className="min-w-[980px] overflow-hidden rounded-lg border border-[var(--line)] bg-white shadow-[0_14px_34px_rgba(35,40,39,0.035)]">
-          <div className="sticky top-0 z-10 grid grid-cols-[68px_repeat(6,1fr)] border-b border-[var(--line)] bg-white/95 backdrop-blur">
+          <div
+            className="sticky top-0 z-10 grid border-b border-[var(--line)] bg-white/95 backdrop-blur"
+            style={{
+              gridTemplateColumns: `68px repeat(${scheduleDays.length}, minmax(130px, 1fr))`,
+            }}
+          >
             <div className="px-3 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
               Hora
             </div>
@@ -198,8 +235,11 @@ export function WeeklySchedule({ appointments }: { appointments: Appointment[] }
           </div>
           {scheduleHours.map((hour) => (
             <div
-              className="grid min-h-20 grid-cols-[68px_repeat(6,1fr)] border-b border-[var(--line)] last:border-b-0"
+              className="grid min-h-20 border-b border-[var(--line)] last:border-b-0"
               key={hour}
+              style={{
+                gridTemplateColumns: `68px repeat(${scheduleDays.length}, minmax(130px, 1fr))`,
+              }}
             >
               <div className="px-3 py-3 text-[11px] font-medium text-[var(--muted)]">
                 {hour}

@@ -178,6 +178,12 @@ export const treatmentSessions: TreatmentSession[] = [
     exercisesGiven: "Isométricos de cuádriceps, puente unilateral y movilidad de tobillo.",
     evolutionNotes: "Mejor tolerancia a escaleras. Mantener progresión gradual.",
     nextRecommendation: "Añadir trabajo excéntrico si no aumenta dolor al día siguiente.",
+    durationMinutes: 60,
+    basePrice: 60,
+    discountAmount: 0,
+    amountPaid: 60,
+    paymentMethod: "bizum",
+    paymentNotes: "",
   },
   {
     id: "s-002",
@@ -194,6 +200,12 @@ export const treatmentSessions: TreatmentSession[] = [
     exercisesGiven: "Equilibrio monopodal, movilidad dorsiflexión y caminata controlada.",
     evolutionNotes: "Menos inflamación. Falta confianza en cambios de dirección.",
     nextRecommendation: "Introducir desplazamientos laterales suaves.",
+    durationMinutes: 60,
+    basePrice: 60,
+    discountAmount: 10,
+    amountPaid: 50,
+    paymentMethod: "cash",
+    paymentNotes: "Descuento aplicado por continuidad.",
   },
   {
     id: "s-003",
@@ -210,6 +222,12 @@ export const treatmentSessions: TreatmentSession[] = [
     exercisesGiven: "Respiración, bisagra de cadera y dead bug adaptado.",
     evolutionNotes: "Más seguridad al moverse. Sigue rigidez por la mañana.",
     nextRecommendation: "Revisar pausas activas durante jornada laboral.",
+    durationMinutes: 30,
+    basePrice: 30,
+    discountAmount: 0,
+    amountPaid: 30,
+    paymentMethod: "card",
+    paymentNotes: "",
   },
 ];
 

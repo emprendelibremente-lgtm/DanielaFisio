@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   CalendarDays,
   ClipboardList,
+  FileSpreadsheet,
   Home,
   Settings,
   TicketCheck,
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Agenda", href: "/private/agenda", icon: CalendarDays },
   { label: "Sesiones", href: "/private/sesiones", icon: ClipboardList },
   { label: "Bonos", href: "/private/bonos", icon: TicketCheck },
+  { label: "Reportes", href: "/private/reportes", icon: FileSpreadsheet },
   { label: "Configuración", href: "/private/configuracion", icon: Settings },
 ];
 
@@ -86,7 +88,7 @@ export function PrivateLayout({
       </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-[var(--line)] bg-[#FAF8F4]/95 px-2 py-2 backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-7 border-t border-[var(--line)] bg-[#FAF8F4]/95 px-1 py-2 backdrop-blur-xl lg:hidden"
         aria-label="Navegación privada móvil"
       >
         {navItems.map((item) => {

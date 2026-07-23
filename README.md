@@ -119,6 +119,13 @@ Esta migración agrega `appointment_id` opcional a las sesiones para vincular un
 sesión con su cita, marcar la cita como completada y evitar sesiones duplicadas
 para la misma cita. No desactiva RLS ni modifica las policies existentes.
 
+## Migraciones del Segmento 6
+
+Ejecutar también `supabase/migrations/004_session_financials_and_reports.sql`.
+Esta migración agrega campos económicos manuales a `treatment_sessions`:
+duración, precio base, descuento, total pagado, método de pago y notas de pago.
+No crea pagos online, facturación ni modifica RLS.
+
 ## Comandos
 
 ```bash
