@@ -1,8 +1,8 @@
+import Image from "next/image";
 import { ArrowUpRight, CheckCircle2, Quote } from "lucide-react";
 import { ButtonLink } from "@/components/ButtonLink";
 import { FeatureCard } from "@/components/FeatureCard";
 import { FinalCta } from "@/components/FinalCta";
-import { PhotoPlaceholder } from "@/components/PhotoPlaceholder";
 import { Section } from "@/components/Section";
 import {
   homeInjuries,
@@ -44,10 +44,19 @@ export default function Home() {
 
           <div className="relative">
             <div className="absolute -left-4 top-8 hidden h-28 w-px bg-[var(--brand)]/70 lg:block" />
-            <PhotoPlaceholder
-              dark
-              label="Espacio reservado para una foto profesional real de Daniela."
-            />
+            <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.04] p-3 shadow-[0_24px_70px_rgba(0,0,0,0.22)]">
+              <div className="relative min-h-[380px] overflow-hidden rounded-md sm:min-h-[460px] lg:min-h-[520px]">
+                <Image
+                  alt="Daniela Ferreira, fisioterapeuta especializada en fisioterapia y rehabilitación"
+                  className="object-cover"
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 38vw, 100vw"
+                  src="/DanielaFerreiraPro.png"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-3 rounded-md ring-1 ring-inset ring-white/10" />
+            </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--brand)]">

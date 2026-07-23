@@ -1,16 +1,23 @@
+import Image from "next/image";
+
 type PhotoPlaceholderProps = {
   label?: string;
   dark?: boolean;
   compact?: boolean;
+  src?: string;
+  alt?: string;
 };
 
 export function PhotoPlaceholder({
   label = "Espacio reservado para foto profesional real",
   dark,
   compact,
+  src = "/DanielaFerreiraPro.png",
+  alt = "Daniela Ferreira, fisioterapeuta especializada en fisioterapia y rehabilitación",
 }: PhotoPlaceholderProps) {
   return (
     <div
+      aria-label={label}
       className={`relative overflow-hidden border ${
         dark
           ? "border-white/10 bg-[#101918]"
@@ -18,22 +25,20 @@ export function PhotoPlaceholder({
       } rounded-lg p-3`}
     >
       <div
-        className={`flex ${
+        className={`relative ${
           compact ? "min-h-64" : "min-h-[420px]"
-        } h-full items-end rounded-md border border-dashed ${
+        } h-full overflow-hidden rounded-md border ${
           dark ? "border-white/16" : "border-[var(--line)]"
-        } bg-[linear-gradient(145deg,rgba(255,255,255,0.72),rgba(141,205,196,0.14),rgba(245,239,230,0.2))] p-5`}
+        } bg-[#F5EFE6]`}
       >
-        <div>
-          <div className="mb-4 h-px w-20 bg-[var(--brand)]" />
-          <p
-            className={`max-w-xs text-sm leading-6 ${
-              dark ? "text-white/64" : "text-[var(--muted)]"
-            }`}
-          >
-            {label}
-          </p>
-        </div>
+        <Image
+          alt={alt}
+          className="object-cover"
+          fill
+          sizes={compact ? "(min-width: 1024px) 32vw, 100vw" : "(min-width: 1024px) 38vw, 100vw"}
+          src={src}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(16,25,24,0.02),rgba(16,25,24,0.18))]" />
       </div>
     </div>
   );

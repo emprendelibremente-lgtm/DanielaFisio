@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 export default async function NewAppointmentPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; patientId?: string }>;
+  searchParams: Promise<{ date?: string; error?: string; patientId?: string; time?: string }>;
 }) {
-  const [{ patientId }, patients] = await Promise.all([
+  const [{ date, patientId, time }, patients] = await Promise.all([
     searchParams,
     getPatients(),
   ]);
@@ -25,7 +25,12 @@ export default async function NewAppointmentPage({
           Puedes seleccionar un paciente existente o registrar uno nuevo
           mientras agendas su primera cita.
         </p>
-        <NewAppointmentForm defaultPatientId={patientId} patients={patients} />
+        <NewAppointmentForm
+          defaultDate={date}
+          defaultPatientId={patientId}
+          defaultTime={time}
+          patients={patients}
+        />
       </section>
     </PrivateLayout>
   );

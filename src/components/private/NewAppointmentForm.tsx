@@ -10,17 +10,23 @@ import { initialActionState } from "@/lib/private/actionState";
 import { PatientSelect } from "./PatientSelect";
 import { SubmitButton } from "./SubmitButton";
 
-function AppointmentFields() {
+function AppointmentFields({
+  defaultDate,
+  defaultTime,
+}: {
+  defaultDate?: string;
+  defaultTime?: string;
+}) {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="text-sm font-medium">
           Fecha
-          <input className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-[#FAF8F4] px-4" name="date" required type="date" />
+          <input className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-[#FAF8F4] px-4" defaultValue={defaultDate} name="date" required type="date" />
         </label>
         <label className="text-sm font-medium">
           Hora
-          <input className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-[#FAF8F4] px-4" name="time" required type="time" />
+          <input className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-[#FAF8F4] px-4" defaultValue={defaultTime} name="time" required type="time" />
         </label>
         <label className="text-sm font-medium">
           Duración
@@ -63,9 +69,13 @@ function StateMessage({ message }: { message: string | null }) {
 export function NewAppointmentForm({
   patients,
   defaultPatientId,
+  defaultDate,
+  defaultTime,
 }: {
   patients: Patient[];
+  defaultDate?: string;
   defaultPatientId?: string;
+  defaultTime?: string;
 }) {
   const [mode, setMode] = useState<"existing" | "new">(
     defaultPatientId ? "existing" : "existing",
@@ -113,7 +123,7 @@ export function NewAppointmentForm({
             Paciente
             <PatientSelect defaultValue={defaultPatientId} patients={patients} />
           </label>
-          <AppointmentFields />
+          <AppointmentFields defaultDate={defaultDate} defaultTime={defaultTime} />
           <SubmitButton>Guardar cita</SubmitButton>
         </form>
       ) : (
@@ -151,7 +161,7 @@ export function NewAppointmentForm({
               </label>
             </div>
           </div>
-          <AppointmentFields />
+          <AppointmentFields defaultDate={defaultDate} defaultTime={defaultTime} />
           <SubmitButton>Crear paciente y agendar cita</SubmitButton>
         </form>
       )}
