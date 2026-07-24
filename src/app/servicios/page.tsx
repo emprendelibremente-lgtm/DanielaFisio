@@ -14,12 +14,12 @@ export default function ServicesPage() {
     <>
       <PageHero
         eyebrow="Servicios"
-        title="Tratamientos para recuperar función, autonomía y seguridad."
-        text="Fisioterapia, terapia manual, ejercicio terapéutico, rehabilitación deportiva e INDIBA se integran según la valoración clínica."
+        title="Servicios para recuperar función, movilidad y confianza."
+        text="Tratamientos personalizados, con objetivos claros y una progresión adaptada a tu evolución."
       />
       <Section
         title="Servicios principales"
-        text="Cada servicio se adapta al caso y se orienta a objetivos concretos: menos dolor, más capacidad y una vuelta progresiva a la actividad."
+        text="Cada servicio parte de una valoración y se adapta al momento del proceso."
       >
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (

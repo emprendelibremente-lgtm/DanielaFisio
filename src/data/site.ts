@@ -1,15 +1,14 @@
 import {
   Activity,
-  ClipboardCheck,
   Dumbbell,
+  HandHeart,
   HeartPulse,
-  ListChecks,
   RadioTower,
-  RefreshCw,
   RotateCcw,
+  SearchCheck,
   Sparkles,
   Stethoscope,
-  Target,
+  TrendingUp,
   UserRoundCheck,
   Waves,
 } from "lucide-react";
@@ -29,130 +28,146 @@ export const navigation = [
   { label: "Servicios", href: "/servicios" },
   { label: "Método", href: "/metodo-de-trabajo" },
   { label: "INDIBA", href: "/indiba-radiofrecuencia" },
-  { label: "Lesiones", href: "/lesiones-frecuentes" },
-  { label: "FAQ", href: "/preguntas-frecuentes" },
   { label: "Contacto", href: "/contacto" },
 ];
 
 export const methodSteps = [
   {
-    title: "Evaluación clínica",
-    text: "Escucha, exploración funcional y análisis del contexto para entender qué limita el movimiento.",
-    icon: ClipboardCheck,
+    title: "Evaluar",
+    text: "Entender el origen del problema, tu contexto y los objetivos que importan.",
+    icon: SearchCheck,
   },
   {
-    title: "Tratamiento personalizado",
-    text: "Terapia manual, educación, ejercicio y tecnología cuando aportan valor al caso.",
-    icon: HeartPulse,
+    title: "Tratar",
+    text: "Combinar terapia manual, tecnología y ejercicio con un criterio claro.",
+    icon: HandHeart,
   },
   {
-    title: "Plan de rehabilitación",
-    text: "Objetivos medibles, ejercicios progresivos y pautas claras para recuperar función.",
-    icon: Target,
-  },
-  {
-    title: "Seguimiento y progresión",
-    text: "Ajustes según evolución, control de carga y retorno gradual a la actividad.",
-    icon: RefreshCw,
+    title: "Progresar",
+    text: "Ajustar el plan según tu evolución y avanzar con seguridad.",
+    icon: TrendingUp,
   },
 ];
 
 export const services = [
   {
-    title: "Evaluación fisioterapéutica inicial",
-    text: "Primera valoración para comprender el motivo de consulta, la historia clínica y los objetivos del proceso.",
+    title: "Evaluación fisioterapéutica",
+    text: "Valoración inicial para entender el problema y definir objetivos concretos.",
     icon: Stethoscope,
   },
   {
-    title: "Rehabilitación deportiva",
-    text: "Planificación del retorno al entrenamiento con criterios clínicos, fuerza, movilidad y control de carga.",
-    icon: Activity,
-  },
-  {
-    title: "Recuperación funcional",
-    text: "Trabajo progresivo para recuperar autonomía, tolerancia al movimiento y seguridad en la vida diaria.",
+    title: "Rehabilitación funcional",
+    text: "Recuperación progresiva de movilidad, fuerza y confianza en el movimiento.",
     icon: RotateCcw,
   },
   {
+    title: "Lesiones deportivas",
+    text: "Acompañamiento para volver al entrenamiento con control de carga.",
+    icon: Activity,
+  },
+  {
     title: "Terapia manual",
-    text: "Técnicas manuales integradas dentro de un plan activo, no como solución aislada.",
+    text: "Técnicas manuales integradas dentro de un proceso activo.",
     icon: Sparkles,
   },
   {
     title: "Ejercicio terapéutico",
-    text: "Programas progresivos para ganar capacidad, autonomía y seguridad en el día a día.",
+    text: "Ejercicios adaptados para ganar capacidad y autonomía.",
     icon: UserRoundCheck,
   },
   {
     title: "INDIBA / radiofrecuencia",
-    text: "Herramienta complementaria dentro del proceso de recuperación, siempre según valoración.",
+    text: "Herramienta complementaria cuando aporta valor al tratamiento.",
     icon: RadioTower,
   },
   {
-    title: "Seguimiento de evolución",
-    text: "Revisión de síntomas, función y carga para ajustar el plan con criterio y continuidad.",
-    icon: ListChecks,
+    title: "Readaptación al entrenamiento",
+    text: "Progresión cuidada para volver a entrenar con más seguridad.",
+    icon: Dumbbell,
+  },
+];
+
+export const homeServices = [
+  {
+    title: "Fisioterapia y rehabilitación",
+    text: "Tratamiento personalizado para recuperar función y seguridad.",
+    icon: Stethoscope,
   },
   {
-    title: "Readaptación al entrenamiento",
-    text: "Progresión cuidadosa hacia la actividad deportiva o el entrenamiento habitual.",
+    title: "Lesiones deportivas",
+    text: "Retorno progresivo al deporte con control de carga.",
+    icon: Activity,
+  },
+  {
+    title: "Terapia manual y ejercicio terapéutico",
+    text: "Trabajo activo combinado con técnicas manuales.",
+    icon: UserRoundCheck,
+  },
+  {
+    title: "INDIBA / radiofrecuencia",
+    text: "Apoyo tecnológico integrado dentro del tratamiento.",
+    icon: RadioTower,
+  },
+  {
+    title: "Readaptación al movimiento",
+    text: "Progresión para volver a moverte con confianza.",
     icon: Dumbbell,
   },
 ];
 
 export const injuries = [
-  "Tobillo",
   "Rodilla",
-  "Lesiones musculares",
-  "Tendinopatías",
-  "Cadera",
+  "Tobillo",
   "Hombro",
+  "Cadera",
   "Codo",
-  "Dolor lumbar",
-  "Recuperación post-lesión deportiva",
-];
-
-export const homeInjuries = [
-  "Tobillo",
-  "Rodilla",
   "Lesiones musculares",
   "Tendinopatías",
   "Dolor lumbar",
-  "Post-lesión deportiva",
 ];
 
 export const faqs = [
   {
-    question: "¿Puedo reservar cita online?",
+    question: "¿Cómo puedo solicitar cita?",
     answer:
-      "Por ahora las citas se solicitan directamente por WhatsApp. Así Daniela puede orientar el caso y confirmar disponibilidad de forma cercana.",
-  },
-  {
-    question: "¿Dónde atiende Daniela?",
-    answer:
-      "Barcelona es su base profesional y atiende pacientes derivados en una clínica ubicada en Passeig de Gràcia. La marca se centra en Daniela como profesional.",
-  },
-  {
-    question: "¿El tratamiento siempre incluye INDIBA?",
-    answer:
-      "No necesariamente. INDIBA se utiliza cuando encaja con la evaluación clínica y puede aportar valor al proceso de recuperación.",
-  },
-  {
-    question: "¿Trabaja con deportistas?",
-    answer:
-      "Sí. Daniela cuenta con máster en rehabilitación deportiva realizado en Barcelona y orienta el retorno al deporte con progresión y control de carga.",
+      "Escríbeme por WhatsApp y te responderé personalmente para coordinar disponibilidad.",
   },
   {
     question: "¿Necesito diagnóstico médico previo?",
     answer:
-      "No siempre. En la primera valoración se revisa el caso y, si aparecen señales que requieren derivación médica, se indicará con claridad.",
+      "No siempre. En la primera sesión se valora el caso y, si hace falta, se orienta una derivación médica.",
+  },
+  {
+    question: "¿Cuántas sesiones necesito?",
+    answer:
+      "Depende del problema, los objetivos y la evolución. Después de valorar el caso se plantea un plan realista.",
+  },
+  {
+    question: "¿Qué ocurre en la primera sesión?",
+    answer:
+      "Se realiza una evaluación, se define el objetivo principal y se inicia el tratamiento según lo que necesites.",
+  },
+  {
+    question: "¿Trabajas con INDIBA?",
+    answer:
+      "Sí, cuando encaja con la valoración. INDIBA se usa como complemento, no como sustituto de la evaluación ni del ejercicio.",
+  },
+  {
+    question: "¿Puedo continuar entrenando durante la recuperación?",
+    answer:
+      "En muchos casos sí, adaptando cargas y movimientos. La decisión depende de la fase y de la respuesta del cuerpo.",
+  },
+  {
+    question: "¿Dónde atiendes?",
+    answer:
+      "Mi base profesional está en Barcelona. La atención se coordina según disponibilidad.",
   },
 ];
 
 export const contactHighlights = [
-  "Fisioterapia individualizada con base profesional en Barcelona",
-  "Solicita cita por WhatsApp",
-  "Sin pagos online ni reservas automáticas",
+  "Base profesional en Barcelona",
+  "Atención según disponibilidad",
+  "Coordinación directa y personal por WhatsApp",
 ];
 
 export const indibaBenefits = [

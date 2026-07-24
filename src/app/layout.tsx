@@ -4,7 +4,7 @@ import "./globals.css";
 
 const title = "Daniela Ferreira | Fisioterapia y Rehabilitación";
 const description =
-  "Fisioterapia personalizada, recuperación funcional y rehabilitación deportiva con enfoque clínico, humano y tecnológico.";
+  "Fisioterapia personalizada, recuperación funcional y rehabilitación deportiva con enfoque clínico y humano.";
 const siteUrl = "https://daniela-fisio.vercel.app/";
 const previewImage = "https://daniela-fisio.vercel.app/og-daniela-fisio.png";
 

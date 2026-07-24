@@ -18,16 +18,16 @@ export function PhotoPlaceholder({
   return (
     <div
       aria-label={label}
-      className={`relative overflow-hidden border ${
+      className={`relative overflow-hidden border shadow-[0_20px_54px_rgba(35,40,39,0.07)] ${
         dark
           ? "border-white/10 bg-[#101918]"
-          : "border-[var(--line)] bg-[#F5EFE6]"
-      } rounded-lg p-3`}
+          : "border-[var(--line)]/70 bg-[#F5EFE6]"
+      } rounded-2xl p-2 sm:p-3`}
     >
       <div
         className={`relative ${
-          compact ? "min-h-64" : "min-h-[420px]"
-        } h-full overflow-hidden rounded-md border ${
+          compact ? "aspect-[4/5] min-h-0 sm:min-h-80" : "min-h-[420px]"
+        } h-full overflow-hidden rounded-xl border ${
           dark ? "border-white/16" : "border-[var(--line)]"
         } bg-[#F5EFE6]`}
       >

@@ -14,12 +14,12 @@ export default function IndibaPage() {
     <>
       <PageHero
         eyebrow="INDIBA / Radiofrecuencia"
-        title="Tecnología de apoyo dentro de un plan de rehabilitación completo."
-        text="INDIBA se utiliza de forma selectiva, según la valoración clínica, la fase del proceso y los objetivos funcionales."
+        title="INDIBA como apoyo dentro de la recuperación."
+        text="Una herramienta complementaria que se integra con valoración, terapia manual y ejercicio terapéutico."
       />
       <Section
-        title="Cómo se integra en el tratamiento"
-        text="La radiofrecuencia se plantea como una herramienta complementaria dentro del proceso de recuperación, junto con evaluación, terapia manual, ejercicio terapéutico y seguimiento. No sustituye el razonamiento clínico ni promete resultados milagrosos."
+        title="Uso prudente y personalizado"
+        text="INDIBA puede acompañar algunos procesos de recuperación, pero no sustituye la evaluación ni el trabajo activo. Su uso depende del caso, la fase y los objetivos."
       >
         <div className="grid gap-4 md:grid-cols-3">
           {indibaBenefits.map((benefit) => (

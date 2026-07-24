@@ -14,15 +14,15 @@ export default function MethodPage() {
     <>
       <PageHero
         eyebrow="Método de trabajo"
-        title="Un proceso ordenado para tomar mejores decisiones clínicas."
-        text="El tratamiento no empieza con una técnica, sino con una comprensión clara del problema y de los objetivos que importan para cada paciente."
+        title="Evaluar, tratar y progresar."
+        text="Un método claro para entender qué ocurre, actuar con criterio y ajustar el plan según tu evolución."
       />
       <Section
         dark
-        title="Las cuatro fases del proceso"
-        text="Este marco ayuda a que cada sesión tenga intención, continuidad y una progresión comprensible."
+        title="Tres pasos, una dirección clara."
+        text="El objetivo es que cada sesión tenga sentido dentro de un proceso ordenado y fácil de seguir."
       >
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3">
           {methodSteps.map((step, index) => (
             <FeatureCard dark index={index} key={step.title} {...step} />
           ))}

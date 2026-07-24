@@ -39,6 +39,10 @@ h2,
   font-family: Georgia, "Times New Roman", serif;
 }
 
+.font-brand {
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+}
+
 a,
 button {
   -webkit-tap-highlight-color: transparent;
