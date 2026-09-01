@@ -120,6 +120,9 @@ const appointmentStyles = {
 };
 
 function AppointmentBlock({ appointment }: { appointment: Appointment }) {
+  const canReportSession =
+    appointment.status !== "completed" && appointment.status !== "cancelled";
+
   return (
     <div
       className={`h-full rounded-md border p-3 shadow-[0_10px_24px_rgba(35,40,39,0.025)] ${appointmentStyles[appointment.status]}`}
@@ -139,6 +142,14 @@ function AppointmentBlock({ appointment }: { appointment: Appointment }) {
         <div>
           <StatusBadge status={appointment.status} />
         </div>
+        {canReportSession ? (
+          <Link
+            className="inline-flex min-h-9 items-center justify-center rounded-full bg-[#0F3D3A] px-3 text-xs font-semibold text-white transition hover:bg-[#101918]"
+            href={`/private/sesiones/nueva?patientId=${appointment.patientId}&appointmentId=${appointment.id}`}
+          >
+            Reportar sesión
+          </Link>
+        ) : null}
       </div>
     </div>
   );

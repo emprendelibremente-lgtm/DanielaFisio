@@ -3,6 +3,7 @@ const messages: Record<string, string> = {
   "patient-updated": "Paciente actualizado correctamente.",
   "appointment-created": "Cita creada correctamente.",
   "session-created": "Sesión registrada correctamente.",
+  "session-deleted": "Sesión eliminada. Reportes e ingresos ya están actualizados.",
   "package-created": "Bono de 5 sesiones creado correctamente.",
   "package-discounted": "Sesión descontada del bono correctamente.",
   "appointment-updated": "Estado de cita actualizado correctamente.",

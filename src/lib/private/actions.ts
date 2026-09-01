@@ -632,6 +632,68 @@ export async function createTreatmentSession(formData: FormData) {
   redirect("/private/sesiones?success=session-created");
 }
 
+export async function deleteTreatmentSession(sessionId: string) {
+  const { supabase, user } = await getPrivateContext();
+  const { data: session, error: sessionError } = await supabase
+    .from("treatment_sessions")
+    .select("appointment_id,patient_id")
+    .eq("id", sessionId)
+    .eq("owner_id", user.id)
+    .maybeSingle();
+
+  if (sessionError || !session) {
+    logSupabaseError("getTreatmentSessionForDelete", sessionError);
+    redirect("/private/sesiones?error=session-delete-failed");
+  }
+
+  const { error: deleteError } = await supabase
+    .from("treatment_sessions")
+    .delete()
+    .eq("id", sessionId)
+    .eq("owner_id", user.id);
+
+  if (deleteError) {
+    logSupabaseError("deleteTreatmentSession", deleteError);
+    redirect("/private/sesiones?error=session-delete-failed");
+  }
+
+  if (session.appointment_id) {
+    await supabase
+      .from("appointments")
+      .update({ status: "confirmed", updated_at: new Date().toISOString() })
+      .eq("id", session.appointment_id)
+      .eq("owner_id", user.id)
+      .eq("status", "completed");
+  }
+
+  if (session.patient_id) {
+    const { data: latestSession } = await supabase
+      .from("treatment_sessions")
+      .select("session_date")
+      .eq("owner_id", user.id)
+      .eq("patient_id", session.patient_id)
+      .order("session_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    await supabase
+      .from("patients")
+      .update({
+        last_session_date: latestSession?.session_date ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", session.patient_id)
+      .eq("owner_id", user.id);
+  }
+
+  revalidatePath("/private/sesiones");
+  revalidatePath("/private/reportes");
+  revalidatePath("/private/pacientes");
+  revalidatePath("/private/agenda");
+  revalidatePath("/private");
+  redirect("/private/sesiones?success=session-deleted");
+}
+
 export async function createSessionPackage(formData: FormData) {
   const { supabase, user } = await getPrivateContext();
   const patientId = text(formData, "patientId");

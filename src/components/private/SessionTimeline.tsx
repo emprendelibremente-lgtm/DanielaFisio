@@ -1,4 +1,5 @@
 import type { TreatmentSession } from "@/types/private";
+import { DeleteSessionButton } from "./DeleteSessionButton";
 
 export function SessionTimeline({
   sessions,
@@ -15,8 +16,9 @@ export function SessionTimeline({
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             <div>
               <p className="text-sm font-semibold">{session.date}</p>
+              <p className="mt-1 text-sm font-medium">{session.patientName}</p>
               <p className="mt-1 text-sm text-[var(--muted)]">
-                {session.reason}
+                {session.reason || "Sesión de fisioterapia"}
               </p>
             </div>
             <p className="text-xs font-semibold text-[var(--muted)]">
@@ -29,6 +31,12 @@ export function SessionTimeline({
           <p className="mt-3 text-xs font-semibold text-[#0F3D3A]">
             INDIBA: {session.usedIndiba ? "Sí" : "No"}
           </p>
+          <div className="mt-4 border-t border-[var(--line)] pt-4">
+            <DeleteSessionButton
+              patientName={session.patientName}
+              sessionId={session.id}
+            />
+          </div>
         </article>
       ))}
     </div>

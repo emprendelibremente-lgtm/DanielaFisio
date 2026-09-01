@@ -34,7 +34,7 @@ export function AppointmentCard({ appointment }: { appointment: Appointment }) {
             className="inline-flex min-h-10 items-center rounded-full bg-[#0F3D3A] px-4 text-xs font-semibold text-white"
             href={`/private/sesiones/nueva?patientId=${appointment.patientId}&appointmentId=${appointment.id}`}
           >
-            Registrar sesión
+            Reportar sesión
           </Link>
         ) : null}
         {appointment.status === "pending" ? (

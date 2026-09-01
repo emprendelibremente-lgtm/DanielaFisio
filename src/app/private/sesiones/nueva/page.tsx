@@ -92,7 +92,9 @@ export default async function NewSessionPage({
               </span>
             </span>
           </label>
-          <SessionFinancialFields />
+          <SessionFinancialFields
+            defaultDurationMinutes={appointment?.durationMinutes}
+          />
           <details className="rounded-lg border border-[var(--line)] bg-[#FAF8F4] p-4">
             <summary className="cursor-pointer text-sm font-semibold">
               Añadir detalles opcionales

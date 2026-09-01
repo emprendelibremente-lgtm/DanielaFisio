@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EmptyState } from "@/components/private/EmptyState";
+import { ErrorMessage } from "@/components/private/ErrorMessage";
 import { PrivateLayout } from "@/components/private/PrivateLayout";
 import { QuickSessionForm } from "@/components/private/QuickSessionForm";
 import { SessionTimeline } from "@/components/private/SessionTimeline";
@@ -13,9 +14,9 @@ export const metadata: Metadata = {
 export default async function PrivateSessionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ success?: string }>;
+  searchParams: Promise<{ error?: string; success?: string }>;
 }) {
-  const [{ success }, treatmentSessions] = await Promise.all([
+  const [{ error, success }, treatmentSessions] = await Promise.all([
     searchParams,
     getTreatmentSessions(),
   ]);
@@ -23,6 +24,9 @@ export default async function PrivateSessionsPage({
   return (
     <PrivateLayout title="Sesiones">
       <SuccessMessage code={success} />
+      <div className="mb-5">
+        <ErrorMessage code={error} />
+      </div>
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <section>
           <h2 className="mb-4 text-xl font-semibold">Sesiones recientes</h2>

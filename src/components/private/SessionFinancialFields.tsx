@@ -2,12 +2,28 @@
 
 import { useMemo, useState } from "react";
 
-export function SessionFinancialFields() {
-  const [durationPreset, setDurationPreset] = useState("60");
-  const [customDuration, setCustomDuration] = useState("");
-  const [basePrice, setBasePrice] = useState("60");
+export function SessionFinancialFields({
+  defaultDurationMinutes = 60,
+}: {
+  defaultDurationMinutes?: number;
+}) {
+  const initialDuration = String(defaultDurationMinutes);
+  const initialPreset = ["30", "60"].includes(initialDuration)
+    ? initialDuration
+    : "custom";
+  const initialPrice =
+    defaultDurationMinutes === 30
+      ? "30"
+      : defaultDurationMinutes === 60
+        ? "60"
+        : "0";
+  const [durationPreset, setDurationPreset] = useState(initialPreset);
+  const [customDuration, setCustomDuration] = useState(
+    initialPreset === "custom" ? initialDuration : "",
+  );
+  const [basePrice, setBasePrice] = useState(initialPrice);
   const [discountAmount, setDiscountAmount] = useState("0");
-  const [amountPaid, setAmountPaid] = useState("60");
+  const [amountPaid, setAmountPaid] = useState(initialPrice);
 
   const durationMinutes = useMemo(
     () => (durationPreset === "custom" ? customDuration : durationPreset),

@@ -144,6 +144,15 @@ function MonthlyAgenda({
                       </div>
                       <StatusBadge status={appointment.status} />
                     </div>
+                    {appointment.status !== "completed" &&
+                    appointment.status !== "cancelled" ? (
+                      <Link
+                        className="mt-3 inline-flex min-h-9 items-center justify-center rounded-full bg-[#0F3D3A] px-3 text-xs font-semibold text-white transition hover:bg-[#101918]"
+                        href={`/private/sesiones/nueva?patientId=${appointment.patientId}&appointmentId=${appointment.id}`}
+                      >
+                        Reportar sesión
+                      </Link>
+                    ) : null}
                   </div>
                 ))
               ) : (

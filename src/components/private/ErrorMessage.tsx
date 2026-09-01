@@ -13,6 +13,7 @@ const messages: Record<string, string> = {
   "delete-confirmation": "Escribe ELIMINAR para confirmar el borrado.",
   "delete-failed": "No se pudo eliminar el paciente.",
   "session-exists": "Ya existe una sesión registrada para esta cita.",
+  "session-delete-failed": "No se pudo eliminar la sesión. Inténtalo de nuevo.",
 };
 
 export function ErrorMessage({ code }: { code?: string | null }) {
