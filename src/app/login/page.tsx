@@ -29,6 +29,10 @@ function getReasonText(reason?: string) {
     return "Inicia sesión para acceder al área privada.";
   }
 
+  if (reason === "recovery-link-invalid") {
+    return "El enlace de recuperación no es válido o ha caducado. Solicita uno nuevo.";
+  }
+
   return null;
 }
 

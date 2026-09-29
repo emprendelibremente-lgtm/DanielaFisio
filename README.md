@@ -56,6 +56,8 @@ Abrir `/login`, entrar con el email de Daniela y contraseña creada en Supabase 
 - Si no hay sesión, `/private` redirige a `/login`.
 - Si hay sesión válida y el email coincide con `DANIELA_ALLOWED_EMAIL`, `/login` redirige a `/private`.
 - Si el email no coincide, se cierra sesión y se bloquea el acceso.
+- La recuperación de contraseña se inicia desde `/recuperar-clave` y termina en
+  `/actualizar-clave`.
 - Si `DANIELA_ALLOWED_EMAIL` no está configurado, el área privada no queda abierta por accidente.
 - La app no incluye pantalla de registro público. Revisar en Supabase Auth que el signup público esté desactivado o controlado.
 
@@ -111,6 +113,17 @@ Para una primera prueba interna con datos reales mínimos:
 - No subir documentos clínicos ni usar la app como historia clínica completa en esta fase.
 - Revisar después de la prueba si los textos, campos y navegación son suficientes para el trabajo diario.
 - Para datos reales, evaluar si conviene alta/archivo en lugar de eliminación definitiva.
+
+## Recuperación de contraseña
+
+En Supabase, añadir esta URL en Authentication > URL Configuration > Redirect URLs:
+
+```text
+https://daniela-fisio.vercel.app/auth/callback?next=/actualizar-clave
+```
+
+El formulario utiliza esa ruta para validar el enlace recibido por correo y
+redirigir de forma segura a `/actualizar-clave`.
 
 ## Migraciones del Segmento 3.4
 

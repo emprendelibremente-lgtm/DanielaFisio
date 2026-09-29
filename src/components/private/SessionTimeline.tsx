@@ -1,5 +1,6 @@
 import type { TreatmentSession } from "@/types/private";
 import { DeleteSessionButton } from "./DeleteSessionButton";
+import { SessionPaymentMethodForm } from "./SessionPaymentMethodForm";
 
 export function SessionTimeline({
   sessions,
@@ -11,6 +12,7 @@ export function SessionTimeline({
       {sessions.map((session) => (
         <article
           className="rounded-lg border border-[var(--line)] bg-white p-5 shadow-[0_14px_34px_rgba(35,40,39,0.035)]"
+          id={`sesion-${session.id}`}
           key={session.id}
         >
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
@@ -31,6 +33,12 @@ export function SessionTimeline({
           <p className="mt-3 text-xs font-semibold text-[#0F3D3A]">
             INDIBA: {session.usedIndiba ? "Sí" : "No"}
           </p>
+          <div className="mt-4 border-t border-[var(--line)] pt-4">
+            <SessionPaymentMethodForm
+              currentMethod={session.paymentMethod}
+              sessionId={session.id}
+            />
+          </div>
           <div className="mt-4 border-t border-[var(--line)] pt-4">
             <DeleteSessionButton
               patientName={session.patientName}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { EmptyState } from "@/components/private/EmptyState";
 import { PrivateLayout } from "@/components/private/PrivateLayout";
 import { ReportDownloadButton } from "@/components/private/ReportDownloadButton";
@@ -205,7 +206,13 @@ export default async function PrivateReportsPage({
                   <span className="font-semibold text-[#0F3D3A]">
                     {euro(session.amountPaid)}
                   </span>
-                  <span>{paymentMethodLabels[session.paymentMethod]}</span>
+                  <Link
+                    className="font-medium text-[#0F3D3A] underline underline-offset-2 hover:text-[var(--brand-hover)]"
+                    href={`/private/sesiones#sesion-${session.id}`}
+                    title="Cambiar método de pago"
+                  >
+                    {paymentMethodLabels[session.paymentMethod]}
+                  </Link>
                 </article>
               ))}
             </div>

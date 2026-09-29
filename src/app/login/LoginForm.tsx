@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LockKeyhole, Mail } from "lucide-react";
@@ -86,6 +87,12 @@ export function LoginForm({
       >
         {isPending ? "Entrando..." : "Entrar al dashboard"}
       </button>
+      <Link
+        className="text-center text-sm font-semibold text-[#0F3D3A] underline underline-offset-4 hover:text-[var(--brand-hover)]"
+        href="/recuperar-clave"
+      >
+        Olvidé mi contraseña
+      </Link>
     </form>
   );
 }

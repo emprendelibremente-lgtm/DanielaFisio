@@ -30,10 +30,7 @@ function formatDate(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-function currentMonthDays() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
+function getMonthDays(year: number, month: number) {
   const days = new Date(year, month + 1, 0).getDate();
 
   return {
@@ -46,7 +43,6 @@ function currentMonthDays() {
       };
     }),
     title: `${monthLabels[month]} ${year}`,
-    today: formatDate(today),
   };
 }
 
@@ -57,17 +53,75 @@ function MonthlyAgenda({
   appointments: Appointment[];
   sessions: TreatmentSession[];
 }) {
-  const { days, title, today } = useMemo(() => currentMonthDays(), []);
-  const [selectedDate, setSelectedDate] = useState(today);
+  const today = useMemo(() => new Date(), []);
+  const todayValue = formatDate(today);
+  const [visibleMonth, setVisibleMonth] = useState(() => ({
+    month: today.getMonth(),
+    year: today.getFullYear(),
+  }));
+  const { days, title } = useMemo(
+    () => getMonthDays(visibleMonth.year, visibleMonth.month),
+    [visibleMonth],
+  );
+  const [selectedDate, setSelectedDate] = useState(todayValue);
   const selectedAppointments = appointments.filter(
     (appointment) => appointment.date === selectedDate,
   );
   const selectedSessions = sessions.filter((session) => session.date === selectedDate);
 
+  function showMonth(offset: number) {
+    const nextMonth = new Date(
+      visibleMonth.year,
+      visibleMonth.month + offset,
+      1,
+    );
+
+    setVisibleMonth({
+      month: nextMonth.getMonth(),
+      year: nextMonth.getFullYear(),
+    });
+    setSelectedDate(formatDate(nextMonth));
+  }
+
+  function showCurrentMonth() {
+    setVisibleMonth({
+      month: today.getMonth(),
+      year: today.getFullYear(),
+    });
+    setSelectedDate(todayValue);
+  }
+
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
       <section className="rounded-lg border border-[var(--line)] bg-white p-4 shadow-[0_14px_34px_rgba(35,40,39,0.035)]">
-        <h2 className="text-lg font-semibold capitalize">{title}</h2>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-lg font-semibold capitalize">{title}</h2>
+          <div className="flex flex-wrap gap-2">
+            <button
+              aria-label="Ver mes anterior"
+              className="min-h-10 rounded-full border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--muted)] transition hover:border-[var(--brand)]/50 hover:text-[#0F3D3A]"
+              onClick={() => showMonth(-1)}
+              type="button"
+            >
+              ← Anterior
+            </button>
+            <button
+              className="min-h-10 rounded-full border border-[var(--brand)]/45 bg-[var(--brand)]/14 px-4 text-sm font-semibold text-[#0F3D3A]"
+              onClick={showCurrentMonth}
+              type="button"
+            >
+              Hoy
+            </button>
+            <button
+              aria-label="Ver mes siguiente"
+              className="min-h-10 rounded-full border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--muted)] transition hover:border-[var(--brand)]/50 hover:text-[#0F3D3A]"
+              onClick={() => showMonth(1)}
+              type="button"
+            >
+              Siguiente →
+            </button>
+          </div>
+        </div>
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           {days.map((day) => {
             const dayAppointments = appointments.filter(

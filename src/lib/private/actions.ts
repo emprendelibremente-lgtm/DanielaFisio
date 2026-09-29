@@ -632,6 +632,46 @@ export async function createTreatmentSession(formData: FormData) {
   redirect("/private/sesiones?success=session-created");
 }
 
+export async function updateSessionPaymentMethod(
+  sessionId: string,
+  _previousState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const value = formData.get("paymentMethod");
+  if (
+    typeof value !== "string" ||
+    (value !== "" && !paymentMethods.includes(value as PaymentMethod))
+  ) {
+    return actionError("Selecciona un método de pago válido.");
+  }
+
+  const { supabase, user } = await getPrivateContext();
+  const { data, error } = await supabase
+    .from("treatment_sessions")
+    .update({
+      payment_method: value || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", sessionId)
+    .eq("owner_id", user.id)
+    .select("patient_id")
+    .maybeSingle();
+
+  if (error || !data) {
+    logSupabaseError("updateSessionPaymentMethod", error);
+    return actionError("No se pudo actualizar el método de pago. Inténtalo de nuevo.");
+  }
+
+  revalidatePath("/private/sesiones");
+  revalidatePath("/private/reportes");
+  revalidatePath("/private/pacientes");
+  if (data.patient_id) {
+    revalidatePath(`/private/pacientes/${data.patient_id}`);
+  }
+
+  return { success: true, message: "Método de pago actualizado." };
+}
+
 export async function deleteTreatmentSession(sessionId: string) {
   const { supabase, user } = await getPrivateContext();
   const { data: session, error: sessionError } = await supabase
