@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +10,46 @@ export function UpdatePasswordForm() {
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [isLinkReady, setIsLinkReady] = useState(false);
+  const [isCheckingLink, setIsCheckingLink] = useState(true);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    let active = true;
+
+    async function checkRecoverySession() {
+      const supabase = createClient();
+      if (!supabase) {
+        if (active) {
+          setMessage("No se pudo conectar con el sistema de acceso.");
+          setIsCheckingLink(false);
+        }
+        return;
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!active) {
+        return;
+      }
+
+      setIsLinkReady(Boolean(user));
+      setIsCheckingLink(false);
+      if (!user) {
+        setMessage(
+          "El enlace no contiene una sesión válida. Vuelve a solicitarlo y abre el correo más reciente.",
+        );
+      }
+    }
+
+    void checkRecoverySession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,9 +75,29 @@ export function UpdatePasswordForm() {
       const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
-        setMessage(
-          "No se pudo cambiar la contraseña. Solicita un enlace de recuperación nuevo.",
-        );
+        const errorText = `${error.code ?? ""} ${error.message}`.toLowerCase();
+
+        if (errorText.includes("same_password") || errorText.includes("different from the old")) {
+          setMessage("La contraseña nueva debe ser diferente de la anterior.");
+        } else if (
+          errorText.includes("weak_password") ||
+          errorText.includes("password should") ||
+          errorText.includes("password must")
+        ) {
+          setMessage(
+            "La contraseña es demasiado débil. Usa 10 o más caracteres con mayúscula, minúscula, número y símbolo.",
+          );
+        } else if (
+          errorText.includes("session") ||
+          errorText.includes("token") ||
+          errorText.includes("jwt")
+        ) {
+          setMessage(
+            "El enlace ha caducado o ya fue utilizado. Solicita un enlace de recuperación nuevo.",
+          );
+        } else {
+          setMessage("No se pudo cambiar la contraseña. Inténtalo de nuevo.");
+        }
         return;
       }
 
@@ -71,6 +130,7 @@ export function UpdatePasswordForm() {
               autoComplete={field.autoComplete}
               className="min-h-12 w-full rounded-full border border-[var(--line)] bg-[#FAF8F4] px-4 pl-11 text-sm outline-none focus:border-[var(--brand-hover)]"
               minLength={8}
+              disabled={!isLinkReady || isPending}
               onChange={(event) => field.onChange(event.target.value)}
               required
               type="password"
@@ -86,10 +146,14 @@ export function UpdatePasswordForm() {
       ) : null}
       <button
         className="min-h-12 rounded-full bg-[#0F3D3A] px-5 text-sm font-semibold text-white transition hover:bg-[#101918] disabled:opacity-60"
-        disabled={isPending}
+        disabled={!isLinkReady || isCheckingLink || isPending}
         type="submit"
       >
-        {isPending ? "Guardando..." : "Guardar nueva contraseña"}
+        {isCheckingLink
+          ? "Validando enlace..."
+          : isPending
+            ? "Guardando..."
+            : "Guardar nueva contraseña"}
       </button>
     </form>
   );
