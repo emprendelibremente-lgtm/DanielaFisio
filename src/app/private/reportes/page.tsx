@@ -18,6 +18,7 @@ import {
   CalendarDays,
   Clock3,
   Euro,
+  Pencil,
   Percent,
   UserRoundCheck,
 } from "lucide-react";
@@ -179,7 +180,7 @@ export default async function PrivateReportsPage({
         <h2 className="mb-4 text-xl font-semibold">Sesiones del mes</h2>
         {monthlySessions.length ? (
           <div className="overflow-hidden rounded-lg border border-[var(--line)] bg-white shadow-[0_14px_34px_rgba(35,40,39,0.035)]">
-            <div className="hidden grid-cols-[0.8fr_1.1fr_0.7fr_1fr_0.7fr_0.7fr_0.8fr_0.9fr] border-b border-[var(--line)] bg-[#F5EFE6]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)] lg:grid">
+            <div className="hidden grid-cols-[0.75fr_1.05fr_0.65fr_0.9fr_0.65fr_0.65fr_0.7fr_0.8fr_0.7fr] border-b border-[var(--line)] bg-[#F5EFE6]/60 px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)] lg:grid">
               <span>Fecha</span>
               <span>Paciente</span>
               <span>Duración</span>
@@ -188,11 +189,12 @@ export default async function PrivateReportsPage({
               <span>Descuento</span>
               <span>Total</span>
               <span>Método</span>
+              <span>Acciones</span>
             </div>
             <div className="divide-y divide-[var(--line)]">
               {monthlySessions.map((session) => (
                 <article
-                  className="grid gap-2 px-4 py-4 text-sm lg:grid-cols-[0.8fr_1.1fr_0.7fr_1fr_0.7fr_0.7fr_0.8fr_0.9fr]"
+                  className="grid gap-2 px-4 py-4 text-sm lg:grid-cols-[0.75fr_1.05fr_0.65fr_0.9fr_0.65fr_0.65fr_0.7fr_0.8fr_0.7fr] lg:items-center"
                   key={session.id}
                 >
                   <span className="font-medium">{session.date}</span>
@@ -212,6 +214,13 @@ export default async function PrivateReportsPage({
                     title="Cambiar método de pago"
                   >
                     {paymentMethodLabels[session.paymentMethod]}
+                  </Link>
+                  <Link
+                    className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[#0F3D3A] px-3 text-xs font-semibold text-white transition hover:bg-[#101918]"
+                    href={`/private/sesiones/${session.id}/editar`}
+                  >
+                    <Pencil className="size-3.5" />
+                    Editar
                   </Link>
                 </article>
               ))}

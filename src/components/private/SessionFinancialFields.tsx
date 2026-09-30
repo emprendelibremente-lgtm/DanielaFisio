@@ -1,29 +1,45 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { PaymentMethod } from "@/types/private";
 
 export function SessionFinancialFields({
   defaultDurationMinutes = 60,
+  defaultBasePrice,
+  defaultDiscountAmount = 0,
+  defaultAmountPaid,
+  defaultPaymentMethod = "",
+  defaultPaymentNotes = "",
 }: {
   defaultDurationMinutes?: number;
+  defaultBasePrice?: number;
+  defaultDiscountAmount?: number;
+  defaultAmountPaid?: number;
+  defaultPaymentMethod?: PaymentMethod | "";
+  defaultPaymentNotes?: string;
 }) {
   const initialDuration = String(defaultDurationMinutes);
   const initialPreset = ["30", "60"].includes(initialDuration)
     ? initialDuration
     : "custom";
-  const initialPrice =
+  const suggestedPrice =
     defaultDurationMinutes === 30
-      ? "30"
+      ? 30
       : defaultDurationMinutes === 60
-        ? "60"
-        : "0";
+        ? 60
+        : 0;
+  const initialPrice = String(defaultBasePrice ?? suggestedPrice);
   const [durationPreset, setDurationPreset] = useState(initialPreset);
   const [customDuration, setCustomDuration] = useState(
     initialPreset === "custom" ? initialDuration : "",
   );
   const [basePrice, setBasePrice] = useState(initialPrice);
-  const [discountAmount, setDiscountAmount] = useState("0");
-  const [amountPaid, setAmountPaid] = useState(initialPrice);
+  const [discountAmount, setDiscountAmount] = useState(
+    String(defaultDiscountAmount),
+  );
+  const [amountPaid, setAmountPaid] = useState(
+    String(defaultAmountPaid ?? Math.max(Number(initialPrice) - defaultDiscountAmount, 0)),
+  );
 
   const durationMinutes = useMemo(
     () => (durationPreset === "custom" ? customDuration : durationPreset),
@@ -138,7 +154,10 @@ export function SessionFinancialFields({
               />
               <button
                 className="min-h-12 rounded-full border border-[var(--brand)]/45 bg-white px-3 text-xs font-semibold text-[#0F3D3A]"
-                onClick={() => setDiscountAmount("10")}
+                onClick={() => {
+                  setDiscountAmount("10");
+                  updateTotal(basePrice, "10");
+                }}
                 type="button"
               >
                 -10 €
@@ -164,6 +183,7 @@ export function SessionFinancialFields({
             Método de pago
             <select
               className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-white px-4"
+              defaultValue={defaultPaymentMethod}
               name="paymentMethod"
             >
               <option value="">Sin indicar</option>
@@ -179,6 +199,7 @@ export function SessionFinancialFields({
             Notas de pago
             <input
               className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-white px-4"
+              defaultValue={defaultPaymentNotes}
               name="paymentNotes"
               placeholder="Opcional"
             />

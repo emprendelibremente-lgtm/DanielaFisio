@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Pencil } from "lucide-react";
 import type { TreatmentSession } from "@/types/private";
 import { DeleteSessionButton } from "./DeleteSessionButton";
 import { SessionPaymentMethodForm } from "./SessionPaymentMethodForm";
@@ -39,7 +41,14 @@ export function SessionTimeline({
               sessionId={session.id}
             />
           </div>
-          <div className="mt-4 border-t border-[var(--line)] pt-4">
+          <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--line)] pt-4">
+            <Link
+              className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[#0F3D3A] px-4 text-xs font-semibold text-white transition hover:bg-[#101918]"
+              href={`/private/sesiones/${session.id}/editar`}
+            >
+              <Pencil className="size-3.5" />
+              Editar sesión
+            </Link>
             <DeleteSessionButton
               patientName={session.patientName}
               sessionId={session.id}

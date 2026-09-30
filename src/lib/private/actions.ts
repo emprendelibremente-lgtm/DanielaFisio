@@ -672,6 +672,133 @@ export async function updateSessionPaymentMethod(
   return { success: true, message: "Método de pago actualizado." };
 }
 
+async function refreshPatientLastSession(patientId: string) {
+  const { supabase, user } = await getPrivateContext();
+  const { data: latestSession } = await supabase
+    .from("treatment_sessions")
+    .select("session_date")
+    .eq("owner_id", user.id)
+    .eq("patient_id", patientId)
+    .order("session_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await supabase
+    .from("patients")
+    .update({
+      last_session_date: latestSession?.session_date ?? null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", patientId)
+    .eq("owner_id", user.id);
+}
+
+export async function updateTreatmentSession(
+  sessionId: string,
+  formData: FormData,
+) {
+  const { supabase, user } = await getPrivateContext();
+  const patientId = text(formData, "patientId");
+  const date = text(formData, "date");
+  const treatmentSummary = text(formData, "treatmentSummary");
+  const durationMinutes = nullableInteger(formData, "durationMinutes");
+  const basePrice = moneyValue(formData, "basePrice");
+  const discountAmount = moneyValue(formData, "discountAmount");
+  const amountPaid = moneyValue(formData, "amountPaid");
+  const selectedPaymentMethod = formData.get("paymentMethod");
+  const painBefore = nullablePainValue(formData, "painBefore");
+  const painAfter = nullablePainValue(formData, "painAfter");
+  const editPath = `/private/sesiones/${sessionId}/editar`;
+
+  if (!patientId || !date || !treatmentSummary || !durationMinutes) {
+    redirect(`${editPath}?error=missing-fields`);
+  }
+
+  if (!painBefore.valid || !painAfter.valid) {
+    redirect(`${editPath}?error=invalid-pain`);
+  }
+
+  if (
+    durationMinutes <= 0 ||
+    basePrice === null ||
+    discountAmount === null ||
+    amountPaid === null ||
+    typeof selectedPaymentMethod !== "string" ||
+    (selectedPaymentMethod !== "" &&
+      !paymentMethods.includes(selectedPaymentMethod as PaymentMethod))
+  ) {
+    redirect(`${editPath}?error=invalid-payment`);
+  }
+
+  const [{ data: existingSession, error: sessionError }, { data: patient }] =
+    await Promise.all([
+      supabase
+        .from("treatment_sessions")
+        .select("patient_id")
+        .eq("id", sessionId)
+        .eq("owner_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("patients")
+        .select("id")
+        .eq("id", patientId)
+        .eq("owner_id", user.id)
+        .maybeSingle(),
+    ]);
+
+  if (sessionError || !existingSession || !patient) {
+    logSupabaseError("getTreatmentSessionForUpdate", sessionError);
+    redirect(`${editPath}?error=session-update-failed`);
+  }
+
+  const { error } = await supabase
+    .from("treatment_sessions")
+    .update({
+      patient_id: patientId,
+      session_date: date,
+      reason: text(formData, "reason"),
+      treatment_summary: treatmentSummary,
+      used_indiba: text(formData, "usedIndiba") === "yes",
+      pain_before: painBefore.value,
+      pain_after: painAfter.value,
+      exercises_given: text(formData, "exercisesGiven"),
+      evolution_notes: text(formData, "evolutionNotes"),
+      next_recommendation: text(formData, "nextRecommendation"),
+      duration_minutes: durationMinutes,
+      base_price: basePrice,
+      discount_amount: discountAmount,
+      amount_paid: amountPaid,
+      payment_method: selectedPaymentMethod || null,
+      payment_notes: text(formData, "paymentNotes"),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", sessionId)
+    .eq("owner_id", user.id);
+
+  if (error) {
+    logSupabaseError("updateTreatmentSession", error);
+    redirect(`${editPath}?error=session-update-failed`);
+  }
+
+  const affectedPatientIds = new Set([existingSession.patient_id, patientId]);
+  await Promise.all(
+    [...affectedPatientIds].filter(Boolean).map(refreshPatientLastSession),
+  );
+
+  revalidatePath("/private/sesiones");
+  revalidatePath("/private/reportes");
+  revalidatePath("/private/pacientes");
+  revalidatePath("/private/agenda");
+  revalidatePath("/private");
+  for (const affectedPatientId of affectedPatientIds) {
+    if (affectedPatientId) {
+      revalidatePath(`/private/pacientes/${affectedPatientId}`);
+    }
+  }
+
+  redirect(`/private/sesiones?success=session-updated#sesion-${sessionId}`);
+}
+
 export async function deleteTreatmentSession(sessionId: string) {
   const { supabase, user } = await getPrivateContext();
   const { data: session, error: sessionError } = await supabase
@@ -707,23 +834,7 @@ export async function deleteTreatmentSession(sessionId: string) {
   }
 
   if (session.patient_id) {
-    const { data: latestSession } = await supabase
-      .from("treatment_sessions")
-      .select("session_date")
-      .eq("owner_id", user.id)
-      .eq("patient_id", session.patient_id)
-      .order("session_date", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    await supabase
-      .from("patients")
-      .update({
-        last_session_date: latestSession?.session_date ?? null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", session.patient_id)
-      .eq("owner_id", user.id);
+    await refreshPatientLastSession(session.patient_id);
   }
 
   revalidatePath("/private/sesiones");

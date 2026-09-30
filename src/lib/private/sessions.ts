@@ -23,6 +23,28 @@ export async function getTreatmentSessions(): Promise<TreatmentSession[]> {
   return (data as TreatmentSessionRow[]).map(mapTreatmentSession);
 }
 
+export async function getTreatmentSessionById(
+  id: string,
+): Promise<TreatmentSession | null> {
+  if (!isSupabaseConfigured()) {
+    return mockSessions.find((session) => session.id === id) ?? null;
+  }
+
+  const { supabase, user } = await getPrivateContext();
+  const { data, error } = await supabase
+    .from("treatment_sessions")
+    .select("*, patients(full_name)")
+    .eq("owner_id", user.id)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return mapTreatmentSession(data as TreatmentSessionRow);
+}
+
 export async function getTreatmentSessionsByPatient(
   patientId: string,
 ): Promise<TreatmentSession[]> {
