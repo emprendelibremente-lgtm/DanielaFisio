@@ -143,6 +143,8 @@ export default async function EditSessionPage({
           <SessionFinancialFields
             defaultAmountPaid={session.amountPaid}
             defaultBasePrice={session.basePrice}
+            defaultCardAmount={session.cardAmount}
+            defaultCashAmount={session.cashAmount}
             defaultDiscountAmount={session.discountAmount}
             defaultDurationMinutes={session.durationMinutes}
             defaultPaymentMethod={session.paymentMethod}

@@ -11,6 +11,7 @@ export type PaymentMethod =
   | "cash"
   | "bizum"
   | "card"
+  | "split"
   | "transfer"
   | "other"
   | "pending";
@@ -59,6 +60,8 @@ export type TreatmentSession = {
   basePrice: number;
   discountAmount: number;
   amountPaid: number;
+  cashAmount: number;
+  cardAmount: number;
   paymentMethod: PaymentMethod | "";
   paymentNotes: string;
 };

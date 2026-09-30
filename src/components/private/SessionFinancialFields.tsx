@@ -8,6 +8,8 @@ export function SessionFinancialFields({
   defaultBasePrice,
   defaultDiscountAmount = 0,
   defaultAmountPaid,
+  defaultCashAmount = 0,
+  defaultCardAmount = 0,
   defaultPaymentMethod = "",
   defaultPaymentNotes = "",
 }: {
@@ -15,6 +17,8 @@ export function SessionFinancialFields({
   defaultBasePrice?: number;
   defaultDiscountAmount?: number;
   defaultAmountPaid?: number;
+  defaultCashAmount?: number;
+  defaultCardAmount?: number;
   defaultPaymentMethod?: PaymentMethod | "";
   defaultPaymentNotes?: string;
 }) {
@@ -40,6 +44,11 @@ export function SessionFinancialFields({
   const [amountPaid, setAmountPaid] = useState(
     String(defaultAmountPaid ?? Math.max(Number(initialPrice) - defaultDiscountAmount, 0)),
   );
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    defaultPaymentMethod,
+  );
+  const [cashAmount, setCashAmount] = useState(String(defaultCashAmount));
+  const [cardAmount, setCardAmount] = useState(String(defaultCardAmount));
 
   const durationMinutes = useMemo(
     () => (durationPreset === "custom" ? customDuration : durationPreset),
@@ -47,10 +56,33 @@ export function SessionFinancialFields({
   );
 
   function updateTotal(baseValue: string, discountValue: string) {
+    if (selectedPaymentMethod === "split") {
+      setAmountPaid(
+        String(Number(cashAmount || 0) + Number(cardAmount || 0)),
+      );
+      return;
+    }
+
     const base = Number(baseValue || 0);
     const discount = Number(discountValue || 0);
     const total = Math.max(base - discount, 0);
     setAmountPaid(String(total));
+  }
+
+  function updateSplitTotal(nextCash: string, nextCard: string) {
+    setAmountPaid(
+      String(Number(nextCash || 0) + Number(nextCard || 0)),
+    );
+  }
+
+  function selectPaymentMethod(value: PaymentMethod | "") {
+    setSelectedPaymentMethod(value);
+
+    if (value === "split" && defaultPaymentMethod !== "split") {
+      setCashAmount("");
+      setCardAmount("");
+      setAmountPaid("0");
+    }
   }
 
   function selectDuration(value: string) {
@@ -171,6 +203,7 @@ export function SessionFinancialFields({
               min={0}
               name="amountPaid"
               onChange={(event) => setAmountPaid(event.target.value)}
+              readOnly={selectedPaymentMethod === "split"}
               step="0.01"
               type="number"
               value={amountPaid}
@@ -183,13 +216,17 @@ export function SessionFinancialFields({
             Método de pago
             <select
               className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-white px-4"
-              defaultValue={defaultPaymentMethod}
               name="paymentMethod"
+              onChange={(event) =>
+                selectPaymentMethod(event.target.value as PaymentMethod | "")
+              }
+              value={selectedPaymentMethod}
             >
               <option value="">Sin indicar</option>
               <option value="cash">Efectivo</option>
               <option value="bizum">Bizum</option>
               <option value="card">Tarjeta</option>
+              <option value="split">Tarjeta + efectivo</option>
               <option value="transfer">Transferencia</option>
               <option value="pending">Pendiente</option>
               <option value="other">Otro</option>
@@ -205,6 +242,55 @@ export function SessionFinancialFields({
             />
           </label>
         </div>
+
+        {selectedPaymentMethod === "split" ? (
+          <div className="rounded-lg border border-[var(--brand)]/35 bg-white p-4">
+            <p className="text-sm font-semibold text-[#0F3D3A]">
+              Distribución del pago
+            </p>
+            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+              Indica cuánto se recibió por cada método. El total pagado se
+              calculará automáticamente.
+            </p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <label className="text-sm font-medium">
+                Parte en efectivo
+                <input
+                  className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-[#FAF8F4] px-4"
+                  min={0}
+                  name="cashAmount"
+                  onChange={(event) => {
+                    setCashAmount(event.target.value);
+                    updateSplitTotal(event.target.value, cardAmount);
+                  }}
+                  required
+                  step="0.01"
+                  type="number"
+                  value={cashAmount}
+                />
+              </label>
+              <label className="text-sm font-medium">
+                Parte con tarjeta
+                <input
+                  className="mt-2 min-h-12 w-full rounded-lg border border-[var(--line)] bg-[#FAF8F4] px-4"
+                  min={0}
+                  name="cardAmount"
+                  onChange={(event) => {
+                    setCardAmount(event.target.value);
+                    updateSplitTotal(cashAmount, event.target.value);
+                  }}
+                  required
+                  step="0.01"
+                  type="number"
+                  value={cardAmount}
+                />
+              </label>
+            </div>
+            <p className="mt-3 text-sm font-semibold text-[#0F3D3A]">
+              Total dividido: {amountPaid || "0"} €
+            </p>
+          </div>
+        ) : null}
       </div>
     </section>
   );

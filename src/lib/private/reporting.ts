@@ -4,11 +4,44 @@ export const paymentMethodLabels: Record<PaymentMethod | "", string> = {
   "": "Sin indicar",
   bizum: "Bizum",
   card: "Tarjeta",
+  split: "Tarjeta + efectivo",
   cash: "Efectivo",
   other: "Otro",
   pending: "Pendiente",
   transfer: "Transferencia",
 };
+
+export function paymentReportSummary(sessions: TreatmentSession[]) {
+  const cashTotal = roundMoney(
+    sessions.reduce((sum, session) => sum + safeMoney(session.cashAmount), 0),
+  );
+  const cardTotal = roundMoney(
+    sessions.reduce((sum, session) => sum + safeMoney(session.cardAmount), 0),
+  );
+  const otherTotal = roundMoney(
+    sessions.reduce(
+      (sum, session) =>
+        sum +
+        Math.max(
+          safeMoney(session.amountPaid) -
+            safeMoney(session.cashAmount) -
+            safeMoney(session.cardAmount),
+          0,
+        ),
+      0,
+    ),
+  );
+
+  return {
+    cashTotal,
+    cardTotal,
+    otherTotal,
+    allocatedTotal: roundMoney(cashTotal + cardTotal + otherTotal),
+    splitSessions: sessions.filter(
+      (session) => session.paymentMethod === "split",
+    ).length,
+  };
+}
 
 export function currentMonthValue() {
   const now = new Date();

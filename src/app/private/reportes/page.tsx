@@ -10,13 +10,16 @@ import {
   euro,
   filterSessionsByMonth,
   monthTitle,
+  paymentReportSummary,
   paymentMethodLabels,
   sessionReportSummary,
   therapyTotals,
 } from "@/lib/private/reporting";
 import {
   CalendarDays,
+  Banknote,
   Clock3,
+  CreditCard,
   Euro,
   Pencil,
   Percent,
@@ -40,6 +43,7 @@ export default async function PrivateReportsPage({
   const monthlySessions = filterSessionsByMonth(sessions, selectedMonth);
   const selectedMonthTitle = monthTitle(selectedMonth);
   const summary = sessionReportSummary(monthlySessions);
+  const paymentSummary = paymentReportSummary(monthlySessions);
   const totalsByTherapy = therapyTotals(monthlySessions, {
     hideOptionalZero: true,
   });
@@ -104,6 +108,27 @@ export default async function PrivateReportsPage({
           icon={UserRoundCheck}
           title="Pacientes"
           value={summary.patientsCount}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StatCard
+          detail="Incluye pagos completos y partes cobradas en efectivo."
+          icon={Banknote}
+          title="Total en efectivo"
+          value={euro(paymentSummary.cashTotal)}
+        />
+        <StatCard
+          detail="Incluye pagos completos y partes cobradas con tarjeta."
+          icon={CreditCard}
+          title="Total con tarjeta"
+          value={euro(paymentSummary.cardTotal)}
+        />
+        <StatCard
+          detail="Bizum, transferencia, otros métodos o cobros pendientes."
+          icon={Euro}
+          title="Otros métodos"
+          value={euro(paymentSummary.otherTotal)}
         />
       </div>
 
@@ -213,7 +238,13 @@ export default async function PrivateReportsPage({
                     href={`/private/sesiones#sesion-${session.id}`}
                     title="Cambiar método de pago"
                   >
-                    {paymentMethodLabels[session.paymentMethod]}
+                    <span>{paymentMethodLabels[session.paymentMethod]}</span>
+                    {session.paymentMethod === "split" ? (
+                      <span className="mt-1 block text-xs font-normal no-underline">
+                        {euro(session.cashAmount)} efectivo +{" "}
+                        {euro(session.cardAmount)} tarjeta
+                      </span>
+                    ) : null}
                   </Link>
                   <Link
                     className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-[#0F3D3A] px-3 text-xs font-semibold text-white transition hover:bg-[#101918]"

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import type { PaymentMethod } from "@/types/private";
 import { initialActionState } from "@/lib/private/actionState";
@@ -28,6 +29,27 @@ export function SessionPaymentMethodForm({
     updateSessionPaymentMethod.bind(null, sessionId),
     initialActionState,
   );
+
+  if (currentMethod === "split") {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-xs font-semibold text-[var(--muted)]">
+            Método de pago
+          </p>
+          <p className="mt-1 text-sm font-semibold text-[#0F3D3A]">
+            {paymentMethodLabels.split}
+          </p>
+        </div>
+        <Link
+          className="text-xs font-semibold text-[#0F3D3A] underline underline-offset-4"
+          href={`/private/sesiones/${sessionId}/editar`}
+        >
+          Editar importes
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <form action={action} className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">

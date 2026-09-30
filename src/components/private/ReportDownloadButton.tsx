@@ -3,6 +3,7 @@
 import type { TreatmentSession } from "@/types/private";
 import {
   paymentMethodLabels,
+  paymentReportSummary,
   sessionReportSummary,
   therapyTotals,
 } from "@/lib/private/reporting";
@@ -301,6 +302,7 @@ function formatDate(date: string) {
 
 function summaryRows(sessions: TreatmentSession[], monthLabel: string) {
   const summary = sessionReportSummary(sessions);
+  const paymentSummary = paymentReportSummary(sessions);
   const totals = therapyTotals(sessions, { hideOptionalZero: true });
   const rows: WorksheetRow[] = [
     { cells: [cell("Daniela Ferreira", style.coverTitle)], height: 30 },
@@ -355,6 +357,24 @@ function summaryRows(sessions: TreatmentSession[], monthLabel: string) {
     },
     {
       cells: [
+        cell("Total cobrado en efectivo", style.summaryItem),
+        cell(paymentSummary.cashTotal, style.euro),
+      ],
+    },
+    {
+      cells: [
+        cell("Total cobrado con tarjeta", style.summaryItem),
+        cell(paymentSummary.cardTotal, style.euro),
+      ],
+    },
+    {
+      cells: [
+        cell("Total cobrado con otros métodos", style.summaryItem),
+        cell(paymentSummary.otherTotal, style.euro),
+      ],
+    },
+    {
+      cells: [
         cell("Pacientes atendidos", style.summaryItem),
         cell(summary.patientsCount, style.centered),
       ],
@@ -375,6 +395,8 @@ function detailRows(sessions: TreatmentSession[]) {
         cell("Precio base", style.tableHeader),
         cell("Descuento", style.tableHeader),
         cell("Total pagado", style.tableHeader),
+        cell("Efectivo", style.tableHeader),
+        cell("Tarjeta", style.tableHeader),
         cell("Método de pago", style.tableHeader),
       ],
     },
@@ -390,6 +412,8 @@ function detailRows(sessions: TreatmentSession[]) {
           cell(session.basePrice, style.euro),
           cell(session.discountAmount, style.euro),
           cell(session.amountPaid, style.detailTotal),
+          cell(session.cashAmount, style.euro),
+          cell(session.cardAmount, style.euro),
           cell(paymentMethodLabels[session.paymentMethod], rowStyle),
         ],
       };
@@ -449,8 +473,8 @@ function createWorkbook(sessions: TreatmentSession[], monthLabel: string) {
     {
       name: "xl/worksheets/sheet2.xml",
       content: worksheetXml({
-        autoFilterRef: "A1:H1",
-        columns: [14, 26, 12, 28, 14, 14, 16, 18],
+        autoFilterRef: "A1:J1",
+        columns: [14, 26, 12, 28, 14, 14, 16, 14, 14, 20],
         freezeTopRow: true,
         rows: detailRows(sessions),
       }),

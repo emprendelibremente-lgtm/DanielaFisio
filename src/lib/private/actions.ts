@@ -46,6 +46,7 @@ const paymentMethods = [
   "cash",
   "bizum",
   "card",
+  "split",
   "transfer",
   "other",
   "pending",
@@ -61,6 +62,42 @@ function paymentMethod(formData: FormData): PaymentMethod | null {
   return paymentMethods.includes(value as PaymentMethod)
     ? (value as PaymentMethod)
     : null;
+}
+
+function paymentAllocation(
+  formData: FormData,
+  method: PaymentMethod | null,
+  amountPaid: number | null,
+) {
+  if (method === "split") {
+    const cashAmount = moneyValue(formData, "cashAmount");
+    const cardAmount = moneyValue(formData, "cardAmount");
+
+    if (
+      cashAmount === null ||
+      cardAmount === null ||
+      cashAmount <= 0 ||
+      cardAmount <= 0
+    ) {
+      return null;
+    }
+
+    return {
+      amountPaid: Number((cashAmount + cardAmount).toFixed(2)),
+      cashAmount,
+      cardAmount,
+    };
+  }
+
+  if (amountPaid === null) {
+    return null;
+  }
+
+  return {
+    amountPaid,
+    cashAmount: method === "cash" ? amountPaid : 0,
+    cardAmount: method === "card" ? amountPaid : 0,
+  };
 }
 
 function appointmentStatus(formData: FormData): AppointmentStatus | null {
@@ -542,9 +579,15 @@ export async function createTreatmentSession(formData: FormData) {
     (durationMinutes === 30 ? 30 : durationMinutes === 60 ? 60 : 0);
   const discountAmount = moneyValue(formData, "discountAmount") ?? 0;
   const manualAmountPaid = moneyValue(formData, "amountPaid");
-  const amountPaid =
+  const enteredAmountPaid =
     manualAmountPaid ?? Math.max(Number((basePrice - discountAmount).toFixed(2)), 0);
+  const rawPaymentMethod = formData.get("paymentMethod");
   const selectedPaymentMethod = paymentMethod(formData);
+  const allocation = paymentAllocation(
+    formData,
+    selectedPaymentMethod,
+    enteredAmountPaid,
+  );
 
   if (!painBefore.valid || !painAfter.valid) {
     redirect("/private/sesiones/nueva?error=invalid-pain");
@@ -554,7 +597,11 @@ export async function createTreatmentSession(formData: FormData) {
     durationMinutes <= 0 ||
     basePrice < 0 ||
     discountAmount < 0 ||
-    amountPaid < 0
+    typeof rawPaymentMethod !== "string" ||
+    (rawPaymentMethod !== "" &&
+      !paymentMethods.includes(rawPaymentMethod as PaymentMethod)) ||
+    !allocation ||
+    allocation.amountPaid < 0
   ) {
     redirect("/private/sesiones/nueva?error=invalid-payment");
   }
@@ -592,7 +639,9 @@ export async function createTreatmentSession(formData: FormData) {
     duration_minutes: durationMinutes,
     base_price: basePrice,
     discount_amount: discountAmount,
-    amount_paid: amountPaid,
+    amount_paid: allocation.amountPaid,
+    cash_amount: allocation.cashAmount,
+    card_amount: allocation.cardAmount,
     payment_method: selectedPaymentMethod,
     payment_notes: text(formData, "paymentNotes"),
     ...(appointmentId ? { appointment_id: appointmentId } : {}),
@@ -640,16 +689,33 @@ export async function updateSessionPaymentMethod(
   const value = formData.get("paymentMethod");
   if (
     typeof value !== "string" ||
+    value === "split" ||
     (value !== "" && !paymentMethods.includes(value as PaymentMethod))
   ) {
-    return actionError("Selecciona un método de pago válido.");
+    return actionError(
+      "Para dividir el pago, abre Editar sesión e indica ambos importes.",
+    );
   }
 
   const { supabase, user } = await getPrivateContext();
+  const { data: session } = await supabase
+    .from("treatment_sessions")
+    .select("amount_paid")
+    .eq("id", sessionId)
+    .eq("owner_id", user.id)
+    .maybeSingle();
+
+  if (!session) {
+    return actionError("No se encontró la sesión.");
+  }
+
+  const amountPaid = Number(session.amount_paid ?? 0);
   const { data, error } = await supabase
     .from("treatment_sessions")
     .update({
       payment_method: value || null,
+      cash_amount: value === "cash" ? amountPaid : 0,
+      card_amount: value === "card" ? amountPaid : 0,
       updated_at: new Date().toISOString(),
     })
     .eq("id", sessionId)
@@ -704,8 +770,8 @@ export async function updateTreatmentSession(
   const durationMinutes = nullableInteger(formData, "durationMinutes");
   const basePrice = moneyValue(formData, "basePrice");
   const discountAmount = moneyValue(formData, "discountAmount");
-  const amountPaid = moneyValue(formData, "amountPaid");
-  const selectedPaymentMethod = formData.get("paymentMethod");
+  const enteredAmountPaid = moneyValue(formData, "amountPaid");
+  const rawPaymentMethod = formData.get("paymentMethod");
   const painBefore = nullablePainValue(formData, "painBefore");
   const painAfter = nullablePainValue(formData, "painAfter");
   const editPath = `/private/sesiones/${sessionId}/editar`;
@@ -722,11 +788,23 @@ export async function updateTreatmentSession(
     durationMinutes <= 0 ||
     basePrice === null ||
     discountAmount === null ||
-    amountPaid === null ||
-    typeof selectedPaymentMethod !== "string" ||
-    (selectedPaymentMethod !== "" &&
-      !paymentMethods.includes(selectedPaymentMethod as PaymentMethod))
+    typeof rawPaymentMethod !== "string" ||
+    (rawPaymentMethod !== "" &&
+      !paymentMethods.includes(rawPaymentMethod as PaymentMethod))
   ) {
+    redirect(`${editPath}?error=invalid-payment`);
+  }
+
+  const selectedPaymentMethod = rawPaymentMethod
+    ? (rawPaymentMethod as PaymentMethod)
+    : null;
+  const allocation = paymentAllocation(
+    formData,
+    selectedPaymentMethod,
+    enteredAmountPaid,
+  );
+
+  if (!allocation) {
     redirect(`${editPath}?error=invalid-payment`);
   }
 
@@ -767,8 +845,10 @@ export async function updateTreatmentSession(
       duration_minutes: durationMinutes,
       base_price: basePrice,
       discount_amount: discountAmount,
-      amount_paid: amountPaid,
-      payment_method: selectedPaymentMethod || null,
+      amount_paid: allocation.amountPaid,
+      cash_amount: allocation.cashAmount,
+      card_amount: allocation.cardAmount,
+      payment_method: selectedPaymentMethod,
       payment_notes: text(formData, "paymentNotes"),
       updated_at: new Date().toISOString(),
     })

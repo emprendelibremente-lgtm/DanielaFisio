@@ -139,6 +139,13 @@ Esta migración agrega campos económicos manuales a `treatment_sessions`:
 duración, precio base, descuento, total pagado, método de pago y notas de pago.
 No crea pagos online, facturación ni modifica RLS.
 
+## Pagos divididos
+
+Ejecutar también `supabase/migrations/005_split_session_payments.sql`.
+Esta migración agrega los importes de efectivo y tarjeta por sesión, conserva
+los cobros existentes y permite registrar un mismo pago dividido entre ambos
+métodos. Los reportes mensuales y el Excel suman cada parte por separado.
+
 ## Comandos
 
 ```bash
